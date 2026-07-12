@@ -1,0 +1,14 @@
+[workspace]
+resolver = "2"
+
+members = [
+    "crates/tyr-common",
+    "crates/tyr-lexer",
+    "crates/tyr-parser",
+    "crates/tyr-ast",
+    "crates/tyr-sema",
+    "crates/tyr-hir",
+    "crates/tyr-backend",
+    "crates/tyr-driver",
+    "crates/tyrc"
+]
