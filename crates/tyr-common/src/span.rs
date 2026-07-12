@@ -13,11 +13,6 @@ pub struct Span {
     pub end: usize,
 }
 
-#[must_use]
-pub const fn contains(&self, position: usize) -> bool {
-    position >= self.start && position < self.end
-}
-
 impl Span {
     /// Creates a new source span.
     #[must_use]
@@ -35,6 +30,11 @@ impl Span {
     #[must_use]
     pub const fn is_empty(&self) -> bool {
         self.start == self.end
+    }
+
+    #[must_use]
+    pub const fn contains(&self, position: usize) -> bool {
+        position >= self.start && position < self.end
     }
 }
 

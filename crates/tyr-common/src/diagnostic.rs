@@ -11,6 +11,18 @@ pub enum Severity {
     Help,
 }
 
+impl Severity {
+    #[must_use]
+    pub const fn as_str(&self) -> &'static str {
+        match self {
+            Self::Error => "error",
+            Self::Warning => "warning",
+            Self::Note => "note",
+            Self::Help => "help",
+        }
+    }
+}
+
 /// A compiler diagnostic.
 ///
 /// Diagnostics are generated throughout the compilation pipeline
@@ -67,17 +79,5 @@ mod tests {
         let diagnostic = Diagnostic::error("unexpected token", Span::new(0, 5));
 
         assert_eq!(diagnostic.severity, Severity::Error);
-    }
-}
-
-impl Severity {
-    #[must_use]
-    pub const fn as_str(&self) -> &'static str {
-        match self {
-            Self::Error => "error",
-            Self::Warning => "warning",
-            Self::Note => "note",
-            Self::Help => "help",
-        }
     }
 }
