@@ -2,5 +2,9 @@
 name = "tyr-common"
 version = "0.1.0"
 edition = "2024"
+license = "Apache-2.0"
+authors = ["The Tyr Project"]
+description = "Common infrastructure shared across the Tyr compiler."
+repository = "https://github.com/thetyrproject/tyrc"
 
 [dependencies]
