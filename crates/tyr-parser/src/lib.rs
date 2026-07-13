@@ -1,14 +1,15 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
-}
+//! Recursive-descent parser for the Tyr language.
+//!
+//! The parser consumes the token stream produced by `tyr-lexer` and
+//! constructs an Abstract Syntax Tree (AST) defined in `tyr-ast`.
+
+pub mod cursor;
+pub mod error;
+pub mod parser;
+
+pub use cursor::Cursor;
+pub use error::ParserResult;
+pub use parser::Parser;
 
 #[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
-}
+mod tests;

@@ -23,3 +23,6 @@ rust-version = "1.88"
 
 [workspace.dependencies]
 tyr-common = { path = "crates/tyr-common" }
+tyr-lexer = { path = "crates/tyr-lexer" }
+tyr-ast = { path = "crates/tyr-ast" }
+tyr-parser = { path = "crates/tyr-parser" }

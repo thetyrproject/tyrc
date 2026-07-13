@@ -36,7 +36,9 @@ dependencies = [
 name = "tyr-parser"
 version = "0.1.0"
 dependencies = [
+ "tyr-ast",
  "tyr-common",
+ "tyr-lexer",
 ]
 
 [[package]]

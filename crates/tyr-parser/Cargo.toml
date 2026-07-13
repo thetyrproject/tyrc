@@ -11,3 +11,5 @@ readme = "README.md"
 
 [dependencies]
 tyr-common.workspace = true
+tyr-lexer.workspace = true
+tyr-ast.workspace = true
