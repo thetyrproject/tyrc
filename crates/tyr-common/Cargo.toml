@@ -1,10 +1,12 @@
 [package]
 name = "tyr-common"
-version = "0.1.0"
-edition = "2024"
-license = "Apache-2.0"
-authors = ["The Tyr Project"]
-description = "Common infrastructure shared across the Tyr compiler."
-repository = "https://github.com/thetyrproject/tyrc"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+
+description = "Lexical analyzer for the Tyr Hardware Description Language."
+readme = "README.md"
 
 [dependencies]

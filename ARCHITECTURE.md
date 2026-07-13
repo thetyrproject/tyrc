@@ -305,6 +305,17 @@ These tools should reuse the compiler frontend whenever practical.
 
 ---
 
+# Compiler Pipeline
+
+- [x] Source
+- [x] Cursor
+- [x] Lexer
+- [ ] Parser
+- [ ] AST
+- [ ] Semantic Analysis
+- [ ] HIR
+- [ ] Backend
+
 **The Tyr Project**
 
 **One Language. Every Digital Architecture.**

@@ -12,3 +12,14 @@ members = [
     "crates/tyr-driver",
     "crates/tyrc"
 ]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+license = "Apache-2.0"
+authors = ["The Tyr Project"]
+repository = "https://github.com/thetyrproject/tyrc"
+rust-version = "1.88"
+
+[workspace.dependencies]
+tyr-common = { path = "crates/tyr-common" }

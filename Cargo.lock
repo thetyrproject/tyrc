@@ -25,6 +25,9 @@ version = "0.1.0"
 [[package]]
 name = "tyr-lexer"
 version = "0.1.0"
+dependencies = [
+ "tyr-common",
+]
 
 [[package]]
 name = "tyr-parser"

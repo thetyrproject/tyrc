@@ -94,15 +94,30 @@ Backend
 
 ## Current Status
 
-🚧 Early Development
+The project is currently in active development.
 
-The compiler is under active development.
+### Completed
 
-Current milestone:
-
-- Compiler infrastructure
 - Workspace architecture
-- Common library
+- Common infrastructure (`tyr-common`)
+- Lexical analyzer (`tyr-lexer`)
+- GitHub Actions CI
+- Unit tests
+- Formatting and Clippy compliance
+
+### In Progress
+
+- Recursive-descent parser
+- AST construction
+
+### Planned
+
+- Semantic analysis
+- HIR generation
+- Backend
+- Verilog/SystemVerilog emitter
+- GTKWave-compatible waveform generation
+- VSCode extension
 
 ---
 

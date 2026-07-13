@@ -1,14 +1,22 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
-}
+//! Tyr lexical analyzer.
+
+pub mod cursor;
+pub mod error;
+pub mod keyword;
+pub mod lexer;
+pub mod literal;
+pub mod operator;
+pub mod punctuation;
+pub mod token;
 
 #[cfg(test)]
-mod tests {
-    use super::*;
+mod tests;
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
-}
+pub use cursor::Cursor;
+pub use error::LexerResult;
+pub use keyword::Keyword;
+pub use lexer::Lexer;
+pub use literal::{Literal, TritValue};
+pub use operator::Operator;
+pub use punctuation::Punctuation;
+pub use token::{Token, TokenKind};
