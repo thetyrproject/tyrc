@@ -94,31 +94,93 @@ Backend
 
 ## Current Status
 
-The project is currently in active development.
+**Current Release:** **v0.2.0**
 
-### Completed
+The Tyr compiler (`tyrc`) is under active development. The project currently implements the initial frontend infrastructure, including lexical analysis, parsing and AST construction.
 
-- Workspace architecture
-- Common infrastructure (`tyr-common`)
-- Lexical analyzer (`tyr-lexer`)
-- GitHub Actions CI
-- Unit tests
-- Formatting and Clippy compliance
+### Implemented
+
+| Component | Status | Notes |
+|-----------|:------:|-------|
+| Workspace | ✅ | Cargo workspace with modular crate architecture |
+| CI/CD | ✅ | GitHub Actions (fmt, check, clippy, tests) |
+| `tyr-common` | ✅ | Diagnostics, spans, source management and common utilities |
+| `tyr-lexer` | ✅ | UTF-8 lexer with keywords, literals, operators, punctuation, comments and diagnostics |
+| `tyr-ast` | ✅ | Core AST nodes (`CompilationUnit`, `Module`, `Identifier`, `Item`) |
+| `tyr-parser` | 🟡 | Initial recursive-descent parser (Compilation Units and Modules) |
+| Unit Tests | ✅ | Workspace-wide tests for implemented crates |
 
 ### In Progress
 
-- Recursive-descent parser
-- AST construction
+- Parsing module members
+- Signal declarations
+- Register declarations
+- Memory declarations
+- Constant declarations
+- Port declarations
+- Flow blocks
 
 ### Planned
 
-- Semantic analysis
-- HIR generation
-- Backend
-- Verilog/SystemVerilog emitter
-- GTKWave-compatible waveform generation
-- VSCode extension
+- Semantic analysis (`tyr-sema`)
+- High-Level Intermediate Representation (`tyr-hir`)
+- Backend framework (`tyr-backend`)
+- Compiler driver (`tyr-driver`)
+- Command-line interface (`tyrc`)
+- Optimisation passes
+- Code generation
+- Hardware simulation support
 
+### Current Compiler Pipeline
+
+```text
+          Source (.tyr)
+                │
+                ▼
+      ┌──────────────────┐
+      │   tyr-lexer      │
+      └──────────────────┘
+                │
+             Tokens
+                │
+                ▼
+      ┌──────────────────┐
+      │   tyr-parser     │
+      └──────────────────┘
+                │
+               AST
+                │
+                ▼
+      ┌──────────────────┐
+      │  tyr-sema        │   (Planned)
+      └──────────────────┘
+                │
+                ▼
+      ┌──────────────────┐
+      │   tyr-hir        │   (Planned)
+      └──────────────────┘
+                │
+                ▼
+      ┌──────────────────┐
+      │ tyr-backend      │   (Planned)
+      └──────────────────┘
+                │
+                ▼
+          Target Hardware
+```
+
+### Development Quality
+
+Every commit to `main` is expected to pass:
+
+```bash
+cargo check
+cargo fmt --all
+cargo clippy --workspace --all-targets --all-features -- -D warnings
+cargo test --workspace
+```
+
+The project follows a test-first, warning-free development workflow. Pull requests are expected to satisfy all of the above checks before merging.
 ---
 
 ## Building
