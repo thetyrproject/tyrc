@@ -5,6 +5,9 @@ version = 4
 [[package]]
 name = "tyr-ast"
 version = "0.1.0"
+dependencies = [
+ "tyr-common",
+]
 
 [[package]]
 name = "tyr-backend"
@@ -32,6 +35,9 @@ dependencies = [
 [[package]]
 name = "tyr-parser"
 version = "0.1.0"
+dependencies = [
+ "tyr-common",
+]
 
 [[package]]
 name = "tyr-sema"

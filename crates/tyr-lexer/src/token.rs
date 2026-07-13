@@ -46,6 +46,25 @@ pub enum TokenKind {
     Eof,
 }
 
+impl TokenKind {
+    /// Returns true if both token kinds are the same variant,
+    /// ignoring any associated data.
+    #[must_use]
+    pub fn same_variant(&self, other: &Self) -> bool {
+        use TokenKind::*;
+
+        matches!(
+            (self, other),
+            (Identifier(_), Identifier(_))
+                | (Keyword(_), Keyword(_))
+                | (Literal(_), Literal(_))
+                | (Operator(_), Operator(_))
+                | (Punctuation(_), Punctuation(_))
+                | (Eof, Eof)
+        )
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
