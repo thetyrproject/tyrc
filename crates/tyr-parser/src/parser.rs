@@ -2,9 +2,14 @@
 
 use crate::{cursor::Cursor, error::ParserResult};
 use tyr_common::{diagnostic::Diagnostic, span::Span};
-use tyr_lexer::{keyword::Keyword, punctuation::Punctuation, token::Token, token::TokenKind};
+use tyr_lexer::{
+    keyword::Keyword,
+    operator::Operator,
+    punctuation::Punctuation,
+    token::{Token, TokenKind},
+};
 
-use tyr_ast::{CompilationUnit, Item, Module, Signal, Type};
+use tyr_ast::{CompilationUnit, Constant, Item, Module, Signal, Type};
 
 /// Recursive-descent parser.
 ///
@@ -84,6 +89,17 @@ impl<'a> Parser<'a> {
         }
     }
 
+    /// Parses a literal value.
+    fn parse_literal(&mut self) -> ParserResult<tyr_lexer::literal::Literal> {
+        let token = self.cursor.advance().expect("parser advanced past EOF");
+
+        match &token.kind {
+            TokenKind::Literal(literal) => Ok(literal.clone()),
+
+            _ => Err(Diagnostic::error("expected a literal", token.span)),
+        }
+    }
+
     /// Parses a signal declaration.
     fn parse_signal(&mut self) -> ParserResult<Signal> {
         let start = self.cursor.expect_keyword(Keyword::Signal)?.span.start;
@@ -97,19 +113,39 @@ impl<'a> Parser<'a> {
         Ok(Signal::new(name, ty, Span::new(start, end)))
     }
 
+    /// Parses a constant declaration.
+    fn parse_constant(&mut self) -> ParserResult<Constant> {
+        let start = self.cursor.expect_keyword(Keyword::Const)?.span.start;
+
+        let name = self.cursor.parse_identifier()?;
+
+        self.cursor.expect_punctuation(Punctuation::Colon)?;
+
+        let ty = self.parse_type()?;
+
+        self.cursor.expect_operator(Operator::Define)?;
+
+        let value = self.parse_literal()?;
+
+        self.cursor.expect_punctuation(Punctuation::Semicolon)?;
+
+        let end = self.cursor.previous().unwrap().span.end;
+
+        Ok(Constant::new(name, ty, value, Span::new(start, end)))
+    }
+
     /// Parses a module item.
     fn parse_item(&mut self) -> ParserResult<Item> {
         match self.cursor.peek() {
             Some(token) => match &token.kind {
                 TokenKind::Keyword(Keyword::Signal) => Ok(Item::Signal(self.parse_signal()?)),
 
-                _ => Err(tyr_common::diagnostic::Diagnostic::error(
-                    "expected a module item",
-                    token.span,
-                )),
+                TokenKind::Keyword(Keyword::Const) => Ok(Item::Constant(self.parse_constant()?)),
+
+                _ => Err(Diagnostic::error("expected a module item", token.span)),
             },
 
-            None => Err(tyr_common::diagnostic::Diagnostic::error(
+            None => Err(Diagnostic::error(
                 "unexpected end of input",
                 Span::new(0, 0),
             )),

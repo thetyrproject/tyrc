@@ -2,7 +2,7 @@
 
 use tyr_ast::{CompilationUnit, Item, Type};
 use tyr_common::source::Source;
-use tyr_lexer::lexer::Lexer;
+use tyr_lexer::{lexer::Lexer, literal::Literal};
 
 use crate::{Parser, error::ParserResult};
 
@@ -23,8 +23,6 @@ fn parse(source: &str) -> ParserResult<CompilationUnit> {
 /// Parses a Tyr source string.
 ///
 /// Panics if parsing fails.
-///
-/// This helper is intended for tests that expect valid input.
 fn parse_ok(source: &str) -> CompilationUnit {
     parse(source).expect("parsing failed")
 }
@@ -114,6 +112,10 @@ end
     assert_eq!(ast.modules[1].name.name, "B");
 }
 
+//
+// Signals
+//
+
 #[test]
 fn parse_bit_signal() {
     let ast = parse_ok(
@@ -126,9 +128,7 @@ end
 "#,
     );
 
-    let module = &ast.modules[0];
-
-    assert_eq!(module.items.len(), 1);
+    assert_eq!(ast.modules[0].items.len(), 1);
 }
 
 #[test]
@@ -143,9 +143,7 @@ end
 "#,
     );
 
-    let module = &ast.modules[0];
-
-    assert_eq!(module.items.len(), 1);
+    assert_eq!(ast.modules[0].items.len(), 1);
 }
 
 #[test]
@@ -184,5 +182,66 @@ end
             assert_eq!(signal.name.name, "clk");
             assert_eq!(signal.ty, Type::Bit);
         }
+
+        Item::Constant(_) => panic!("expected signal"),
+    }
+}
+
+//
+// Constants
+//
+
+#[test]
+fn parse_bit_constant() {
+    let ast = parse_ok(
+        r#"
+module Main
+
+const WIDTH : bit = 1;
+
+end
+"#,
+    );
+
+    assert_eq!(ast.modules[0].items.len(), 1);
+}
+
+#[test]
+fn parse_trit_constant() {
+    let ast = parse_ok(
+        r#"
+module Main
+
+const ZERO : trit = 0tb0;
+
+end
+"#,
+    );
+
+    assert_eq!(ast.modules[0].items.len(), 1);
+}
+
+#[test]
+fn constant_name_type_and_value() {
+    let ast = parse_ok(
+        r#"
+module Main
+
+const WIDTH : bit = 1;
+
+end
+"#,
+    );
+
+    let module = &ast.modules[0];
+
+    match &module.items[0] {
+        Item::Constant(constant) => {
+            assert_eq!(constant.name.name, "WIDTH");
+            assert_eq!(constant.ty, Type::Bit);
+            assert_eq!(constant.value, Literal::Integer("1".into()));
+        }
+
+        Item::Signal(_) => panic!("expected constant"),
     }
 }

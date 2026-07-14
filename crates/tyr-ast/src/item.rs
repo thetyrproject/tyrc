@@ -1,6 +1,6 @@
 //! AST item nodes.
 
-use crate::signal::Signal;
+use crate::{constant::Constant, signal::Signal};
 
 /// An item contained within a module.
 ///
@@ -10,6 +10,9 @@ use crate::signal::Signal;
 pub enum Item {
     /// Signal declaration.
     Signal(Signal),
+
+    /// Constant declaration.
+    Constant(Constant),
 }
 
 #[cfg(test)]
@@ -31,5 +34,24 @@ mod tests {
         let item = Item::Signal(signal.clone());
 
         assert_eq!(item, Item::Signal(signal));
+    }
+
+    #[test]
+    fn create_constant_item() {
+        use crate::{constant::Constant, identifier::Identifier, r#type::Type};
+
+        use tyr_common::span::Span;
+        use tyr_lexer::literal::Literal;
+
+        let constant = Constant::new(
+            Identifier::new("WIDTH", Span::new(0, 5)),
+            Type::Bit,
+            Literal::Integer("1".into()),
+            Span::new(0, 20),
+        );
+
+        let item = Item::Constant(constant.clone());
+
+        assert_eq!(item, Item::Constant(constant));
     }
 }

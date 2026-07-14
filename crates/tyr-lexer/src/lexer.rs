@@ -134,16 +134,91 @@ impl<'a> Lexer<'a> {
     fn lex_number(&mut self) -> Token {
         self.cursor.begin_token();
 
-        let mut value = self.cursor.eat_while(|c| c.is_ascii_digit());
+        let mut value = String::new();
+
+        // ------------------------------------------------------------
+        // Radix-prefixed literals
+        // ------------------------------------------------------------
+        if self.cursor.peek() == Some('0') {
+            value.push(self.cursor.advance().unwrap());
+
+            match self.cursor.peek() {
+                // Binary
+                Some('b') => {
+                    value.push(self.cursor.advance().unwrap());
+                    value.push_str(&self.cursor.eat_while(|c| c == '0' || c == '1' || c == '_'));
+                }
+
+                // Octal
+                Some('o') => {
+                    value.push(self.cursor.advance().unwrap());
+                    value.push_str(
+                        &self
+                            .cursor
+                            .eat_while(|c| ('0'..='7').contains(&c) || c == '_'),
+                    );
+                }
+
+                // Hexadecimal
+                Some('x') => {
+                    value.push(self.cursor.advance().unwrap());
+                    value.push_str(&self.cursor.eat_while(|c| c.is_ascii_hexdigit() || c == '_'));
+                }
+
+                // Ternary family
+                Some('t') => {
+                    value.push(self.cursor.advance().unwrap());
+
+                    // Optional subtype.
+                    if let Some('f' | 'b') = self.cursor.peek() {
+                        value.push(self.cursor.advance().unwrap());
+                    }
+
+                    value.push_str(
+                        &self
+                            .cursor
+                            .eat_while(|c| matches!(c, '0' | '1' | '2' | 'n' | 'h' | '_')),
+                    );
+                }
+
+                // Decimal starting with 0.
+                _ => {
+                    value.push_str(&self.cursor.eat_while(|c| c.is_ascii_digit() || c == '_'));
+
+                    if self.cursor.peek() == Some('.')
+                        && self.cursor.peek_next().is_some_and(|c| c.is_ascii_digit())
+                    {
+                        value.push('.');
+                        self.cursor.advance();
+
+                        value.push_str(&self.cursor.eat_while(|c| c.is_ascii_digit() || c == '_'));
+
+                        return Token::new(
+                            TokenKind::Literal(Literal::Float(value)),
+                            self.cursor.finish_token(),
+                        );
+                    }
+                }
+            }
+
+            return Token::new(
+                TokenKind::Literal(Literal::Integer(value)),
+                self.cursor.finish_token(),
+            );
+        }
+
+        // ------------------------------------------------------------
+        // Decimal integer / float
+        // ------------------------------------------------------------
+        value.push_str(&self.cursor.eat_while(|c| c.is_ascii_digit() || c == '_'));
 
         if self.cursor.peek() == Some('.')
             && self.cursor.peek_next().is_some_and(|c| c.is_ascii_digit())
         {
             value.push('.');
-
             self.cursor.advance();
 
-            value.push_str(&self.cursor.eat_while(|c| c.is_ascii_digit()));
+            value.push_str(&self.cursor.eat_while(|c| c.is_ascii_digit() || c == '_'));
 
             return Token::new(
                 TokenKind::Literal(Literal::Float(value)),

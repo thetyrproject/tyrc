@@ -23,6 +23,9 @@ pub enum Operator {
     Greater,
     GreaterEqual,
 
+    //Define
+    Define,
+
     // Logical
     LogicalAnd,
     LogicalOr,
@@ -64,6 +67,7 @@ pub const OPERATORS: &[(&str, Operator)] = &[
     ("%", Operator::Modulo),
     ("<", Operator::Less),
     (">", Operator::Greater),
+    ("=", Operator::Define),
     ("&", Operator::BitAnd),
     ("|", Operator::BitOr),
     ("^", Operator::BitXor),
