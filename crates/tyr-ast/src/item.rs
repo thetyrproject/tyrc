@@ -1,23 +1,35 @@
 //! AST item nodes.
 
+use crate::signal::Signal;
+
 /// An item contained within a module.
 ///
 /// Every declaration that may appear inside a module is represented
 /// as an item.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Item {
-    /// Placeholder until real items are implemented.
-    Empty,
+    /// Signal declaration.
+    Signal(Signal),
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    #[test]
-    fn create_empty_item() {
-        let item = Item::Empty;
+    use crate::{identifier::Identifier, signal::Signal, r#type::Type};
 
-        assert_eq!(item, Item::Empty);
+    use tyr_common::span::Span;
+
+    #[test]
+    fn create_signal_item() {
+        let signal = Signal::new(
+            Identifier::new("clk", Span::new(0, 3)),
+            Type::Bit,
+            Span::new(0, 16),
+        );
+
+        let item = Item::Signal(signal.clone());
+
+        assert_eq!(item, Item::Signal(signal));
     }
 }

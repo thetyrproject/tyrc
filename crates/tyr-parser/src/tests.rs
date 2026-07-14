@@ -1,6 +1,6 @@
 //! Tests for the Tyr parser.
 
-use tyr_ast::CompilationUnit;
+use tyr_ast::{CompilationUnit, Item, Type};
 use tyr_common::source::Source;
 use tyr_lexer::lexer::Lexer;
 
@@ -112,4 +112,77 @@ end
 
     assert_eq!(ast.modules[0].name.name, "A");
     assert_eq!(ast.modules[1].name.name, "B");
+}
+
+#[test]
+fn parse_bit_signal() {
+    let ast = parse_ok(
+        r#"
+module Main
+
+signal clk : bit;
+
+end
+"#,
+    );
+
+    let module = &ast.modules[0];
+
+    assert_eq!(module.items.len(), 1);
+}
+
+#[test]
+fn parse_trit_signal() {
+    let ast = parse_ok(
+        r#"
+module Main
+
+signal data : trit;
+
+end
+"#,
+    );
+
+    let module = &ast.modules[0];
+
+    assert_eq!(module.items.len(), 1);
+}
+
+#[test]
+fn parse_multiple_signals() {
+    let ast = parse_ok(
+        r#"
+module Main
+
+signal clk : bit;
+signal a : trit;
+signal b : trit;
+
+end
+"#,
+    );
+
+    assert_eq!(ast.modules[0].items.len(), 3);
+}
+
+#[test]
+fn signal_name_and_type() {
+    let ast = parse_ok(
+        r#"
+module Main
+
+signal clk : bit;
+
+end
+"#,
+    );
+
+    let module = &ast.modules[0];
+
+    match &module.items[0] {
+        Item::Signal(signal) => {
+            assert_eq!(signal.name.name, "clk");
+            assert_eq!(signal.ty, Type::Bit);
+        }
+    }
 }

@@ -62,7 +62,7 @@ impl<'a> Cursor<'a> {
     /// Consumes the current token if it has the expected kind.
     pub fn match_kind(&mut self, kind: &TokenKind) -> bool {
         match self.peek() {
-            Some(token) if token.kind.same_variant(kind) => {
+            Some(token) if token.kind.matches_expected(kind) => {
                 self.position += 1;
                 true
             }
@@ -76,7 +76,7 @@ impl<'a> Cursor<'a> {
     /// Returns an error otherwise.
     pub fn expect(&mut self, expected: &TokenKind) -> Result<&'a Token, Diagnostic> {
         match self.peek() {
-            Some(token) if token.kind.same_variant(expected) => Ok(self.advance().unwrap()),
+            Some(token) if token.kind.matches_expected(expected) => Ok(self.advance().unwrap()),
 
             Some(token) => Err(Diagnostic::error(
                 format!("expected {:?}, found {:?}", expected, token.kind),

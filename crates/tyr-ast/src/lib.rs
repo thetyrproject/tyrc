@@ -8,8 +8,12 @@ pub mod compilation_unit;
 pub mod identifier;
 pub mod item;
 pub mod module;
+pub mod signal;
+pub mod r#type;
 
 pub use compilation_unit::CompilationUnit;
 pub use identifier::Identifier;
 pub use item::Item;
 pub use module::Module;
+pub use signal::Signal;
+pub use r#type::Type;

@@ -47,21 +47,24 @@ pub enum TokenKind {
 }
 
 impl TokenKind {
-    /// Returns true if both token kinds are the same variant,
-    /// ignoring any associated data.
     #[must_use]
-    pub fn same_variant(&self, other: &Self) -> bool {
+    pub fn matches_expected(&self, other: &Self) -> bool {
         use TokenKind::*;
 
-        matches!(
-            (self, other),
-            (Identifier(_), Identifier(_))
-                | (Keyword(_), Keyword(_))
-                | (Literal(_), Literal(_))
-                | (Operator(_), Operator(_))
-                | (Punctuation(_), Punctuation(_))
-                | (Eof, Eof)
-        )
+        match (self, other) {
+            (Identifier(_), Identifier(_)) => true,
+            (Literal(_), Literal(_)) => true,
+
+            (Keyword(a), Keyword(b)) => a == b,
+            (Operator(a), Operator(b)) => a == b,
+            (Punctuation(a), Punctuation(b)) => a == b,
+
+            (Directive(a), Directive(b)) => a == b,
+
+            (Eof, Eof) => true,
+
+            _ => false,
+        }
     }
 }
 
