@@ -92,86 +92,135 @@ Backend
 
 ---
 
+## Compiler Roadmap
+
+- ✅ v0.1 — Lexer
+- ✅ v0.2 — Parser infrastructure
+- ✅ v0.3 — Signal declarations
+- ⏳ v0.3.x — Hardware declarations (constants, registers, memories, ports)
+- ⏳ v0.4 — Semantic analysis
+- ⏳ v0.5 — High-Level IR
+- ⏳ v0.6 — Backend framework
+- ⏳ v0.7 — First code generation target
+- ⏳ v0.8 — Optimisation passes
+- ⏳ v0.9 — Feature-complete beta
+- ⏳ v1.0 — Stable Tyr compiler
+
+---
+
 ## Current Status
 
-**Current Release:** **v0.2.0**
+**Current Release:** **v0.3.0**
 
-The Tyr compiler (`tyrc`) is under active development. The project currently implements the initial frontend infrastructure, including lexical analysis, parsing and AST construction.
+The Tyr compiler (`tyrc`) is under active development. The project currently implements the complete frontend foundation, including lexical analysis, AST construction and recursive-descent parsing of modules and signal declarations.
 
 ### Implemented
 
 | Component | Status | Notes |
 |-----------|:------:|-------|
-| Workspace | ✅ | Cargo workspace with modular crate architecture |
-| CI/CD | ✅ | GitHub Actions (fmt, check, clippy, tests) |
+| Workspace | ✅ | Modular Cargo workspace architecture |
+| CI/CD | ✅ | GitHub Actions (check, fmt, clippy, tests) |
 | `tyr-common` | ✅ | Diagnostics, spans, source management and common utilities |
-| `tyr-lexer` | ✅ | UTF-8 lexer with keywords, literals, operators, punctuation, comments and diagnostics |
-| `tyr-ast` | ✅ | Core AST nodes (`CompilationUnit`, `Module`, `Identifier`, `Item`) |
-| `tyr-parser` | 🟡 | Initial recursive-descent parser (Compilation Units and Modules) |
-| Unit Tests | ✅ | Workspace-wide tests for implemented crates |
+| `tyr-lexer` | ✅ | UTF-8 lexer with keywords, identifiers, literals, operators, punctuation, directives and diagnostics |
+| `tyr-ast` | ✅ | AST nodes for compilation units, modules, identifiers, types and signal declarations |
+| `tyr-parser` | 🟡 | Recursive-descent parser supporting compilation units, modules and signal declarations |
+| Unit Tests | ✅ | Comprehensive unit tests for implemented frontend components |
+
+### Language Features
+
+Currently supported syntax:
+
+```tyr
+module Main
+
+signal clk  : bit;
+signal data : trit;
+
+end
+```
+
+Supported primitive types:
+
+- `bit`
+- `trit`
+- `clock`
+- `event`
+
+Supported integer literal encodings:
+
+- `0b` — Binary
+- `0o` — Octal
+- `0x` — Hexadecimal
+- `0t` — Traditional unbalanced ternary (`0`, `1`, `2`)
+- `0tf` — Fractional unbalanced ternary (`0`, `h`, `1`)
+- `0tb` — Balanced ternary (`n`, `0`, `1`)
 
 ### In Progress
 
-- Parsing module members
-- Signal declarations
+- Constant declarations
 - Register declarations
 - Memory declarations
-- Constant declarations
-- Port declarations
+- Port declarations (`input`, `output`, `inout`)
 - Flow blocks
+- Composite type parsing (`bus`, `array`)
 
 ### Planned
 
 - Semantic analysis (`tyr-sema`)
+- Symbol table construction
+- Type checking
 - High-Level Intermediate Representation (`tyr-hir`)
 - Backend framework (`tyr-backend`)
 - Compiler driver (`tyr-driver`)
 - Command-line interface (`tyrc`)
 - Optimisation passes
-- Code generation
+- Hardware code generation
 - Hardware simulation support
 
 ### Current Compiler Pipeline
 
 ```text
-          Source (.tyr)
-                │
-                ▼
-      ┌──────────────────┐
-      │   tyr-lexer      │
-      └──────────────────┘
-                │
-             Tokens
-                │
-                ▼
-      ┌──────────────────┐
-      │   tyr-parser     │
-      └──────────────────┘
-                │
-               AST
-                │
-                ▼
-      ┌──────────────────┐
-      │  tyr-sema        │   (Planned)
-      └──────────────────┘
-                │
-                ▼
-      ┌──────────────────┐
-      │   tyr-hir        │   (Planned)
-      └──────────────────┘
-                │
-                ▼
-      ┌──────────────────┐
-      │ tyr-backend      │   (Planned)
-      └──────────────────┘
-                │
-                ▼
-          Target Hardware
+                Source (.tyr)
+                      │
+                      ▼
+        ┌────────────────────────┐
+        │       tyr-lexer        │
+        └────────────────────────┘
+                      │
+                   Tokens
+                      │
+                      ▼
+        ┌────────────────────────┐
+        │      tyr-parser        │
+        └────────────────────────┘
+                      │
+                      ▼
+        ┌────────────────────────┐
+        │        tyr-ast         │
+        └────────────────────────┘
+                      │
+                      ▼
+        ┌────────────────────────┐
+        │       tyr-sema         │   (Planned)
+        └────────────────────────┘
+                      │
+                      ▼
+        ┌────────────────────────┐
+        │        tyr-hir         │   (Planned)
+        └────────────────────────┘
+                      │
+                      ▼
+        ┌────────────────────────┐
+        │     tyr-backend        │   (Planned)
+        └────────────────────────┘
+                      │
+                      ▼
+               Target Hardware
 ```
 
 ### Development Quality
 
-Every commit to `main` is expected to pass:
+Every commit to `main` is expected to successfully complete the **Tyr Dance**:
 
 ```bash
 cargo check
@@ -180,39 +229,7 @@ cargo clippy --workspace --all-targets --all-features -- -D warnings
 cargo test --workspace
 ```
 
-The project follows a test-first, warning-free development workflow. Pull requests are expected to satisfy all of the above checks before merging.
----
-
-## Building
-
-Requirements:
-
-- Rust (latest stable)
-- Cargo
-
-Build:
-
-```bash
-cargo build
-```
-
-Run tests:
-
-```bash
-cargo test
-```
-
-Lint:
-
-```bash
-cargo clippy --workspace --all-targets --all-features -- -D warnings
-```
-
-Format:
-
-```bash
-cargo fmt --all
-```
+The project follows a warning-free, test-driven development workflow. Every change is validated through the complete frontend before being committed.
 
 ---
 
