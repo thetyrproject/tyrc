@@ -1,6 +1,6 @@
 //! AST item nodes.
 
-use crate::{constant::Constant, signal::Signal};
+use crate::{constant::Constant, register::Register, signal::Signal};
 
 /// An item contained within a module.
 ///
@@ -13,6 +13,9 @@ pub enum Item {
 
     /// Constant declaration.
     Constant(Constant),
+
+    /// Register declaration.
+    Register(Register),
 }
 
 #[cfg(test)]
@@ -53,5 +56,22 @@ mod tests {
         let item = Item::Constant(constant.clone());
 
         assert_eq!(item, Item::Constant(constant));
+    }
+
+    #[test]
+    fn create_register_item() {
+        use crate::{identifier::Identifier, register::Register, r#type::Type};
+
+        use tyr_common::span::Span;
+
+        let register = Register::new(
+            Identifier::new("counter", Span::new(0, 7)),
+            Type::Trit,
+            Span::new(0, 24),
+        );
+
+        let item = Item::Register(register.clone());
+
+        assert_eq!(item, Item::Register(register));
     }
 }

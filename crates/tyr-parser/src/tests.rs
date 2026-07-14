@@ -183,7 +183,7 @@ end
             assert_eq!(signal.ty, Type::Bit);
         }
 
-        Item::Constant(_) => panic!("expected signal"),
+        _ => panic!("expected signal"),
     }
 }
 
@@ -242,6 +242,62 @@ end
             assert_eq!(constant.value, Literal::Integer("1".into()));
         }
 
-        Item::Signal(_) => panic!("expected constant"),
+        _ => panic!("expected constant"),
     }
+}
+
+#[test]
+fn parse_register() {
+    let ast = parse_ok(
+        r#"
+module Main
+
+register counter : trit;
+
+end
+"#,
+    );
+
+    assert_eq!(ast.modules[0].items.len(), 1);
+}
+
+#[test]
+fn register_name_and_type() {
+    let ast = parse_ok(
+        r#"
+module Main
+
+register counter : trit;
+
+end
+"#,
+    );
+
+    let module = &ast.modules[0];
+
+    match &module.items[0] {
+        Item::Register(register) => {
+            assert_eq!(register.name.name, "counter");
+            assert_eq!(register.ty, Type::Trit);
+        }
+
+        _ => panic!("expected register"),
+    }
+}
+
+#[test]
+fn parse_multiple_registers() {
+    let ast = parse_ok(
+        r#"
+module Main
+
+register pc : bit;
+register acc : trit;
+register tmp : trit;
+
+end
+"#,
+    );
+
+    assert_eq!(ast.modules[0].items.len(), 3);
 }

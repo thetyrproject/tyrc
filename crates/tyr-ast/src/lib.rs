@@ -9,6 +9,7 @@ pub mod constant;
 pub mod identifier;
 pub mod item;
 pub mod module;
+pub mod register;
 pub mod signal;
 pub mod r#type;
 
@@ -17,5 +18,6 @@ pub use constant::Constant;
 pub use identifier::Identifier;
 pub use item::Item;
 pub use module::Module;
+pub use register::Register;
 pub use signal::Signal;
 pub use r#type::Type;

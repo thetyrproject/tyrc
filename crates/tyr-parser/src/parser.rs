@@ -9,7 +9,7 @@ use tyr_lexer::{
     token::{Token, TokenKind},
 };
 
-use tyr_ast::{CompilationUnit, Constant, Item, Module, Signal, Type};
+use tyr_ast::{CompilationUnit, Constant, Item, Module, Register, Signal, Type};
 
 /// Recursive-descent parser.
 ///
@@ -134,6 +134,23 @@ impl<'a> Parser<'a> {
         Ok(Constant::new(name, ty, value, Span::new(start, end)))
     }
 
+    /// Parses a register declaration.
+    fn parse_register(&mut self) -> ParserResult<Register> {
+        let start = self.cursor.expect_keyword(Keyword::Register)?.span.start;
+
+        let name = self.cursor.parse_identifier()?;
+
+        self.cursor.expect_punctuation(Punctuation::Colon)?;
+
+        let ty = self.parse_type()?;
+
+        self.cursor.expect_punctuation(Punctuation::Semicolon)?;
+
+        let end = self.cursor.previous().unwrap().span.end;
+
+        Ok(Register::new(name, ty, Span::new(start, end)))
+    }
+
     /// Parses a module item.
     fn parse_item(&mut self) -> ParserResult<Item> {
         match self.cursor.peek() {
@@ -141,6 +158,8 @@ impl<'a> Parser<'a> {
                 TokenKind::Keyword(Keyword::Signal) => Ok(Item::Signal(self.parse_signal()?)),
 
                 TokenKind::Keyword(Keyword::Const) => Ok(Item::Constant(self.parse_constant()?)),
+
+                TokenKind::Keyword(Keyword::Register) => Ok(Item::Register(self.parse_register()?)),
 
                 _ => Err(Diagnostic::error("expected a module item", token.span)),
             },
